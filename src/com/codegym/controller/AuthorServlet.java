@@ -1,24 +1,23 @@
 package com.codegym.controller;
 
-import com.codegym.model.Category;
-import com.codegym.service.CategoryService;
-import com.codegym.service.CategoryServiceImpl;
-import com.sun.xml.internal.rngom.parse.host.Base;
-
+import com.codegym.model.Author;
+import com.codegym.service.AuthorService;
+import com.codegym.service.AuthorServiceImpl;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet(name = "CategoryServlet", urlPatterns = "/categories")
-public class CategoryServlet extends BaseServlet {
+@WebServlet(name = "AuthorServlet", urlPatterns = "/authors")
+@MultipartConfig
+public class AuthorServlet extends BaseServlet {
 
-    private CategoryService categoryService = new CategoryServiceImpl();
+    private AuthorService authorService = new AuthorServiceImpl();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -27,13 +26,13 @@ public class CategoryServlet extends BaseServlet {
         }
         switch (action){
             case "create":
-                createCategory(request, response);
+                createAuthor(request, response);
                 break;
             case "edit":
-                updateCategory(request, response);
+                updateAuthor(request, response);
                 break;
             case "delete":
-                deleteCategory(request, response);
+                deleteAuthor(request, response);
                 break;
             default:
                 break;
@@ -56,24 +55,24 @@ public class CategoryServlet extends BaseServlet {
                 showDeleteForm(request, response);
                 break;
             case "view":
-                viewCategory(request, response);
+                viewAuthor(request, response);
                 break;
             default:
-                listCategories(request, response);
+                listAuthors(request, response);
                 break;
         }
     }
 
-    private void viewCategory(HttpServletRequest request, HttpServletResponse response) {
+    private void viewAuthor(HttpServletRequest request, HttpServletResponse response) {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
-            Category category = this.categoryService.findById(id);
+            Author author = this.authorService.findById(id);
             RequestDispatcher dispatcher;
-            if(category == null){
+            if(author == null){
                 dispatcher = request.getRequestDispatcher("error-404.jsp");
             } else {
-                request.setAttribute("category", category);
-                dispatcher = request.getRequestDispatcher("category/view.jsp");
+                request.setAttribute("author", author);
+                dispatcher = request.getRequestDispatcher("author/view.jsp");
             }
             dispatcher.forward(request, response);
         } catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
@@ -81,16 +80,16 @@ public class CategoryServlet extends BaseServlet {
         }
     }
 
-    private void deleteCategory(HttpServletRequest request, HttpServletResponse response) {
+    private void deleteAuthor(HttpServletRequest request, HttpServletResponse response) {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
-            Category category = this.categoryService.findById(id);
+            Author author = this.authorService.findById(id);
             RequestDispatcher dispatcher;
-            if(category == null){
+            if(author == null){
                 dispatcher = request.getRequestDispatcher("error-404.jsp");
             } else {
-                this.categoryService.remove(id);
-                response.sendRedirect("/categories");
+                this.authorService.remove(id);
+                response.sendRedirect("/authors");
             }
         } catch (ClassNotFoundException | SQLException | IOException e) {
             showInternalError(e, request, response);
@@ -100,13 +99,13 @@ public class CategoryServlet extends BaseServlet {
     private void showDeleteForm(HttpServletRequest request, HttpServletResponse response) {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
-            Category category = this.categoryService.findById(id);
+            Author author = this.authorService.findById(id);
             RequestDispatcher dispatcher;
-            if(category == null){
+            if(author == null){
                 dispatcher = request.getRequestDispatcher("error-404.jsp");
             } else {
-                request.setAttribute("category", category);
-                dispatcher = request.getRequestDispatcher("category/delete.jsp");
+                request.setAttribute("author", author);
+                dispatcher = request.getRequestDispatcher("author/delete.jsp");
             }
             dispatcher.forward(request, response);
         } catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
@@ -114,20 +113,22 @@ public class CategoryServlet extends BaseServlet {
         }
     }
 
-    private void updateCategory(HttpServletRequest request, HttpServletResponse response) {
+    private void updateAuthor(HttpServletRequest request, HttpServletResponse response) {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
             String name = request.getParameter("name");
-            Category category = this.categoryService.findById(id);
+            String description = request.getParameter("description");
+            Author author = this.authorService.findById(id);
             RequestDispatcher dispatcher;
-            if(category == null){
+            if(author == null){
                 dispatcher = request.getRequestDispatcher("error-404.jsp");
             } else {
-                category.setName(name);
-                this.categoryService.update(id, category);
-                request.setAttribute("category", category);
-                request.setAttribute("message", "Category information was updated");
-                dispatcher = request.getRequestDispatcher("category/edit.jsp");
+                author.setName(name);
+                author.setDescription(description);
+                this.authorService.update(id, author);
+                request.setAttribute("author", author);
+                request.setAttribute("message", "Author information was updated");
+                dispatcher = request.getRequestDispatcher("author/edit.jsp");
             }
             dispatcher.forward(request, response);
         }  catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
@@ -138,13 +139,13 @@ public class CategoryServlet extends BaseServlet {
     private void showEditForm(HttpServletRequest request, HttpServletResponse response) {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
-            Category category = this.categoryService.findById(id);
+            Author author = this.authorService.findById(id);
             RequestDispatcher dispatcher;
-            if(category == null){
+            if(author == null){
                 dispatcher = request.getRequestDispatcher("error-404.jsp");
             } else {
-                request.setAttribute("category", category);
-                dispatcher = request.getRequestDispatcher("category/edit.jsp");
+                request.setAttribute("author", author);
+                dispatcher = request.getRequestDispatcher("author/edit.jsp");
             }
             dispatcher.forward(request, response);
         }  catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
@@ -152,14 +153,14 @@ public class CategoryServlet extends BaseServlet {
         }
     }
 
-    private void createCategory(HttpServletRequest request, HttpServletResponse response) {
+    private void createAuthor(HttpServletRequest request, HttpServletResponse response) {
         try {
             String name = request.getParameter("name");
-
-            Category category = new Category(name);
-            this.categoryService.save(category);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("category/create.jsp");
-            request.setAttribute("message", "New category was created");
+            String description = request.getParameter("description");
+            Author author = new Author(name, description);
+            this.authorService.save(author);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("author/create.jsp");
+            request.setAttribute("message", "New author was created");
             dispatcher.forward(request, response);
         }  catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
             showInternalError(e, request, response);
@@ -168,7 +169,7 @@ public class CategoryServlet extends BaseServlet {
 
     private void showCreateForm(HttpServletRequest request, HttpServletResponse response) {
         try {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("category/create.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("author/create.jsp");
             dispatcher.forward(request, response);
         } catch (ServletException e) {
             e.printStackTrace();
@@ -177,11 +178,11 @@ public class CategoryServlet extends BaseServlet {
         }
     }
 
-    private void listCategories(HttpServletRequest request, HttpServletResponse response) {
+    private void listAuthors(HttpServletRequest request, HttpServletResponse response) {
         try {
-            List<Category> categories = this.categoryService.findAll();
-            request.setAttribute("categories", categories);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("category/list.jsp");
+            List<Author> authors = this.authorService.findAll();
+            request.setAttribute("authors", authors);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("author/list.jsp");
             dispatcher.forward(request, response);
         }  catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
             showInternalError(e, request, response);

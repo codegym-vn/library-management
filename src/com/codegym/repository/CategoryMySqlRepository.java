@@ -52,7 +52,6 @@ public class CategoryMySqlRepository implements CategoryRepository {
     @Override
     public boolean update(int id, Category category) throws SQLException, ClassNotFoundException {
         Connection connection = ConnectionUtils.connect();
-        List<Category> categories = new ArrayList<>();
         Statement stmt = connection.createStatement();
         int affectedRows = stmt.executeUpdate("UPDATE `categories` SET " +
                 "`name`='" + category.getName() + "'" +
@@ -64,7 +63,6 @@ public class CategoryMySqlRepository implements CategoryRepository {
     @Override
     public boolean remove(int id) throws SQLException, ClassNotFoundException {
         Connection connection = ConnectionUtils.connect();
-        List<Category> categories = new ArrayList<>();
         Statement stmt = connection.createStatement();
         int affectedRows = stmt.executeUpdate("DELETE FROM `categories` WHERE `id`=" + id);
         connection.close();

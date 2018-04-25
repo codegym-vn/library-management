@@ -11,6 +11,8 @@
     <title>Library Management System</title>
   </head>
   <body>
-    <a href="/categories">Show categories</a>
+    <a href="/categories">Category</a>
+    <a href="/readers">Reader</a>
+    <a href="/authors">Author</a>
   </body>
 </html>
