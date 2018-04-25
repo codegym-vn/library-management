@@ -1,10 +1,8 @@
 package com.codegym.repository;
 
 import com.codegym.model.Category;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +27,9 @@ public class CategoryMySqlRepository implements CategoryRepository {
     @Override
     public boolean save(Category category) throws SQLException, ClassNotFoundException {
         Connection connection = ConnectionUtils.connect();
-        Statement stmt = connection.createStatement();
-        int affectedRows = stmt.executeUpdate("INSERT INTO `categories`(`name`) VALUES('" + category.getName() + "')");
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `categories`(`name`) VALUES(?)");
+        preparedStatement.setString(1, category.getName());
+        int affectedRows = preparedStatement.executeUpdate();
         connection.close();
         return affectedRows > 0;
     }
@@ -38,8 +37,9 @@ public class CategoryMySqlRepository implements CategoryRepository {
     @Override
     public Category findById(int id) throws SQLException, ClassNotFoundException {
         Connection connection = ConnectionUtils.connect();
-        Statement stmt = connection.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM `categories` WHERE `id`=" + id);
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `categories` WHERE `id`=?");
+        preparedStatement.setInt(1, id);
+        ResultSet rs = preparedStatement.executeQuery();
         Category category = null;
         if (rs.next()){
             String name = rs.getString("name");
@@ -52,11 +52,10 @@ public class CategoryMySqlRepository implements CategoryRepository {
     @Override
     public boolean update(int id, Category category) throws SQLException, ClassNotFoundException {
         Connection connection = ConnectionUtils.connect();
-        List<Category> categories = new ArrayList<>();
-        Statement stmt = connection.createStatement();
-        int affectedRows = stmt.executeUpdate("UPDATE `categories` SET " +
-                "`name`='" + category.getName() + "'" +
-                " WHERE `id`=" + id);
+        PreparedStatement preparedStatement = connection.prepareStatement("UPDATE `categories` SET `name`=? WHERE `id`=?");
+        preparedStatement.setString(1, category.getName());
+        preparedStatement.setInt(2, id);
+        int affectedRows = preparedStatement.executeUpdate();
         connection.close();
         return affectedRows > 0;
     }
@@ -64,9 +63,9 @@ public class CategoryMySqlRepository implements CategoryRepository {
     @Override
     public boolean remove(int id) throws SQLException, ClassNotFoundException {
         Connection connection = ConnectionUtils.connect();
-        List<Category> categories = new ArrayList<>();
-        Statement stmt = connection.createStatement();
-        int affectedRows = stmt.executeUpdate("DELETE FROM `categories` WHERE `id`=" + id);
+        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM `categories` WHERE `id`=?");
+        preparedStatement.setInt(1, id);
+        int affectedRows = preparedStatement.executeUpdate();
         connection.close();
         return affectedRows > 0;
     }
