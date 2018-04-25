@@ -1,7 +1,6 @@
 package com.codegym.repository;
 
 import com.codegym.model.Category;
-
 import java.sql.SQLException;
 import java.util.List;
 

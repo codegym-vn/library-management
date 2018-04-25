@@ -83,14 +83,14 @@ public class CategoryServlet extends HttpServlet {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
             Category category = this.categoryService.findById(id);
-            RequestDispatcher dispatcher;
             if(category == null){
-                dispatcher = request.getRequestDispatcher("error-404.jsp");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("error-404.jsp");
+                dispatcher.forward(request, response);
             } else {
                 this.categoryService.remove(id);
                 response.sendRedirect("/categories");
             }
-        } catch (ClassNotFoundException | SQLException | IOException e) {
+        } catch (ClassNotFoundException | SQLException | IOException | ServletException e) {
             showInternalError(e, request, response);
         }
     }
@@ -153,7 +153,6 @@ public class CategoryServlet extends HttpServlet {
     private void createCategory(HttpServletRequest request, HttpServletResponse response) {
         try {
             String name = request.getParameter("name");
-            String email = request.getParameter("email");
             int id = (int)(Math.random() * 10000);
 
             Category category = new Category(id, name);
@@ -192,9 +191,7 @@ public class CategoryServlet extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("error-500.jsp");
             request.setAttribute("message", exception.getMessage());
             dispatcher.forward(request, response);
-        } catch (ServletException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (ServletException | IOException e) {
             e.printStackTrace();
         }
     }
